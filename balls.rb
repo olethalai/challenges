@@ -4,10 +4,14 @@ One is slightly heavier than the others, but you are unable to tell without a se
 Determine the fewest number of weighs required to figure out which is the heavier ball...
 Even if the heavy ball is not always in the same position in the set.
 
-Then, solve for n balls.
+Then, solve for n balls. Status: Complete!
+
+Extra credit:
+Solve for a random ball being a different weight, but you are not told whether it will be heavier 
+or lighter than the other balls. Status: Incomplete.
 
 Notepad++ FTW!
-JEdit, poor performance.
+JEdit, get it together.
 =end
 
 
@@ -137,6 +141,8 @@ def solve(ballsArray, ballsWaiting=false)
 		end
 	end
 	
+	# Uncomment the line below to enter the Matrix
+	# puts "calling split(#{ballsArray})"
 	splitBallsArray = split(ballsArray)
 	roundResult = "result not yet defined for this round"
 	endResult = nil
@@ -186,77 +192,60 @@ return	splitSets	Array of Arrays of sorted Balls - should never contain more tha
 =end
 def split(ballsArray)
 	
-	# Set size is determined using log base 3
-	setSize = 3**(((Math.log(ballsArray.length, 3)).ceil) -1)
-	rightSetSize = setSize
-	leftOutSetSize = setSize
-	
-	if ((setSize * 3) > ballsArray.length)
-		# Make arrangements so that the array is not accessed out of bounds
-		difference = ((setSize * 3) - ballsArray.length)
-		
-		# The left set is made first and will always be full, so no action needs to be taken for the left set
-		if (difference > setSize) # Then the right set will be affected as well as the left out set
-			rightSetSize = (setSize - (difference - setSize))
-			leftOutSetSize = 0
-		else
-			leftOutSetSize = (setSize - difference)
-		end
-	end
-	
 	ballSetLeft = Array.new
 	ballSetRight = Array.new
 	ballSetLeftOut = Array.new
+	splitSets = Array.new
 	
-	# The left set will always be full size (setSize)
+	# Balls in the left and right sets are evenly distributed
+	setSize = (ballsArray.length / 3).floor
+	# Any leftover balls go into the left out set, as this will not upset the balance on the next weigh
+	leftOutSetSize = setSize + (ballsArray.length % 3)
+	
+	if setSize == 0 # Then ballsArray only contains two elements
+		# For this special case, variables will be set manually
+		setSize = 1
+		leftOutSetSize = 0
+	end
+	
 	ballsArray[0...setSize].each do |ball|
 		ballSetLeft.push ball
 	end
 	
-	ballsArray[setSize...(setSize + rightSetSize)].each do |ball|
+	ballsArray[setSize...(setSize * 2)].each do |ball|
 		ballSetRight.push ball
 	end
 	
-	# The left out set size has a possibility of being 0
-	if leftOutSetSize != 0
-		ballsArray[(setSize * 2)...(setSize * 2 + leftOutSetSize)].each do |ball|
-			ballSetLeftOut.push ball
-		end
+	ballsArray[(setSize * 2)...(setSize * 2 + leftOutSetSize)].each do |ball|
+		ballSetLeftOut.push ball
 	end
 	
-	splitSets = Array.new
-	splitSets.push(ballSetLeft, ballSetRight, ballSetLeftOut)
-	
-	# Tests to ensure the arrays and variables are the correct lengths and values, respectively
+	# Tests to ensure the arrays are the correct lengths
 	if ballSetLeft.length != setSize
 		puts "ballSetLeft is incorrect size"
-		puts "actual: #{ballSetLeft}"
+		puts "actual: #{ballSetLeft.length}"
 		puts "expected: #{setSize}"
 		return
 	end
-	if ballSetRight.length != rightSetSize
+	if ballSetRight.length != setSize
 		puts "ballSetRight is incorrect size"
-		puts "actual: #{ballSetRight}"
+		puts "actual: #{ballSetRight.length}"
 		puts "expected: #{rightSetSize}"
 		return
 	end
 	if ballSetLeftOut.length != leftOutSetSize
 		puts "ballSetLeftOut is incorrect size"
-		puts "actual: #{ballSetLeftOut}"
+		puts "actual: #{ballSetLeftOut.length}"
 		puts "expected: #{leftOutSetSize}"
 		return
 	end
-	if rightSetSize > setSize
-		puts "rightSetSize is incorrect size - actual: #{rightSetSize} expected: #{setSize}"
-		return
-	end
-	if leftOutSetSize > setSize
-		puts "leftOutSetSize is incorrect size - actual: #{leftOutSetSize} expected: #{setSize}"
-		return
-	end
+	
+	
+	# weigh() takes Arrays, so even if there is only one item in the left and right Arrays, they must still be added to the Array of Arrays
+	splitSets.push(ballSetLeft, ballSetRight, ballSetLeftOut)
 	
 	if splitSets.length > 3
-		puts "splitSets tried to split your balls into more than three arrays! D:"
+		puts "split() tried to split your balls into more than three arrays! D:"
 		return false
 	else
 		return splitSets
