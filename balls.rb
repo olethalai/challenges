@@ -118,27 +118,22 @@ end
 =begin
 method	solve			Dictates the order of functions needed to successfully solve the given puzzle
 param*	ballsArray		Array of Balls to be considered
-param	ballsWaiting	Flag to prevent single unweighed balls being incorrectly identified as the 
-						heavy ball when there are more unweighed balls in the set	Default = false
-return	endResult		@id of the Ball which has been identified as most likely to be the heavy ball 
-						for this iteration
+return	endResult		@id of the Ball which has been identified as the heavy ball
 =end
-def solve(ballsArray, ballsWaiting=false)
+def solve(ballsArray)
 	# Test to ensure valid data has been passed in
 	if ballsArray.length == 0
 		puts "No balls in given array"
 		return "ERROR: I don't have any balls! :("
 	end
-
+	
+	# Check your efficiency by uncommenting the lines below
 	# estimatedWeighsLeft = (Math.log(ballsArray.length, 3)).ceil
 	# puts "Estimated number of weighs left to determine heavy ball: #{estimatedWeighsLeft}"
 	
+	# If there is only one ball left, the heavy ball has beed found!
 	if ballsArray.length == 1
-		if !ballsWaiting
-			return ballsArray[0].id
-		else
-			return ballsArray[0]
-		end
+		return ballsArray[0].id
 	end
 	
 	# Uncomment the line below to enter the Matrix
@@ -147,39 +142,20 @@ def solve(ballsArray, ballsWaiting=false)
 	roundResult = "result not yet defined for this round"
 	endResult = nil
 	
-	# If weighing different numbers of balls against each other, the result of the weighing won't be meaningful.
-	if splitBallsArray[0].length == splitBallsArray[1].length
-		roundResult = weigh(splitBallsArray[0], splitBallsArray[1])
-		# puts roundResult
-	
-		# The next action to be taken is dependent on the outcome of the weigh
-		if roundResult == "balanced"
-			# If all weighs have been balanced and this is not the only ball which has not been weighed, results are not yet conclusive. 
-			if splitBallsArray[2].length == 1 && ballsWaiting
-				# A single unweighed ball is returned to be added to the remaining unweighed balls
-				return splitBallsArray[2].last
-			else
-				endResult = solve(splitBallsArray[2], ballsWaiting)
-			end
-		elsif roundResult == "left heavier"
-			endResult = solve(splitBallsArray[0], ballsWaiting)
-		elsif roundResult == "right heavier"
-			endResult = solve(splitBallsArray[1], ballsWaiting)
-		else
-			puts "A result was not found, the puzzle could not be solved. :("
-			return false
-		end
+	roundResult = weigh(splitBallsArray[0], splitBallsArray[1])
+
+	# The next action to be taken is dependent on the outcome of the weigh
+	if roundResult == "balanced"
+		endResult = solve(splitBallsArray[2])
+	elsif roundResult == "left heavier"
+		endResult = solve(splitBallsArray[0])
+	elsif roundResult == "right heavier"
+		endResult = solve(splitBallsArray[1])
 	else
-		# When there are not two even sets to weigh, the second set of balls must be kept back.
-		# If the heavy ball is not found in the first set, a single ball will be returned to be added to the second set, which will then be solved separately.
-		ballsWaiting = true
-		splitBallsArray[1].push(solve(splitBallsArray[0], ballsWaiting))
-		# Now that all the unweighed balls are in the same array, the ballsWaiting flag can be dismissed.
-		ballsWaiting = false
-		endResult = solve(splitBallsArray[1], ballsWaiting)
+		puts "A result was not found, the puzzle could not be solved. :("
+		return false
 	end
 	
-	# As this is a recursive function, this is not always the final result for the original set of balls.
 	return endResult
 end
 
@@ -300,11 +276,12 @@ def solveAllForMultipleN(maxN, minN=2)
 		success = solveAll(i)
 	end
 	
+	# Think with Portals
 	if success
 		puts "THIS WAS A TRIUMPH!"
 		return true
 	else
-		puts "One was wrong... :("
+		puts "You're a potato... :("
 		return false
 	end
 end
