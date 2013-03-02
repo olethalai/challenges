@@ -105,7 +105,7 @@ def generateBalls(b, oddBall=1, alwaysHeavier=true)
 			if alwaysHeavier == true
 				generatedBalls.push Ball.new(Ball.defaultWeight + 1)
 			else
-				puts "you need to write code for randomly selecting a heavier or lighter weight!"
+				puts "You need to write code for randomly selecting a heavier or lighter weight!"
 			end
 		end
 	end
@@ -123,7 +123,7 @@ return	endResult		@id of the Ball which has been identified as the heavy ball
 def solve(ballsArray)
 	# Test to ensure valid data has been passed in
 	if ballsArray.length == 0
-		puts "No balls in given array"
+		puts "No balls in given array."
 		return "ERROR: I don't have any balls! :("
 	end
 	
@@ -199,20 +199,20 @@ def split(ballsArray)
 	# Tests to ensure the arrays are the correct lengths
 	if ballSetLeft.length != setSize
 		puts "ballSetLeft is incorrect size"
-		puts "actual: #{ballSetLeft.length}"
-		puts "expected: #{setSize}"
+		puts "Actual: #{ballSetLeft.length}"
+		puts "Expected: #{setSize}"
 		return
 	end
 	if ballSetRight.length != setSize
 		puts "ballSetRight is incorrect size"
-		puts "actual: #{ballSetRight.length}"
-		puts "expected: #{rightSetSize}"
+		puts "Actual: #{ballSetRight.length}"
+		puts "Expected: #{rightSetSize}"
 		return
 	end
 	if ballSetLeftOut.length != leftOutSetSize
 		puts "ballSetLeftOut is incorrect size"
-		puts "actual: #{ballSetLeftOut.length}"
-		puts "expected: #{leftOutSetSize}"
+		puts "Actual: #{ballSetLeftOut.length}"
+		puts "Expected: #{leftOutSetSize}"
 		return
 	end
 	
@@ -237,7 +237,7 @@ return	boolean		true if all puzzles were successfully solved, false if any one
 =end
 def solveAll(n=8)
 	for i in 1..n
-		puts "solving for #{n} balls, where ball #{i} is heavier"
+		puts "Solving for #{n} balls, where ball #{i} is heavier..."
 		
 		# Gives some visibility on outcomes
 		if solve(generateBalls(n, i)) == i
@@ -268,7 +268,7 @@ def solveAllForMultipleN(maxN, minN=2)
 		return false
 	end
 	if minN < 1
-		puts "Minimum must be more than 0"
+		puts "Minimum must be more than 0."
 		return false
 	end
 	
