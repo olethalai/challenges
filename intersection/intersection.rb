@@ -10,6 +10,24 @@ y = b + r sin(t)
 Intersections of a circle's circumference and a straight line parallel to the y axis (y = n) can be found by solving the quadratic:
 n = squareRoot(r^2 - (x - a)^2) + b
 
+Known bugs:
+Possible for circle radius and square side length to be 0.
+No implementation of changing default radius range.
+No implementation of changing default side length range.
+Possible for top right corner of square to be placed on edge of circle, resulting in no intersection area.
+
+TODO:
+Figure out formula for solving the puzzle
+Implement method to solve for any given intersecting circle and square
+Add debug logs
+Implement method to solve the puzzle any given number of times, using randomly generated circles and squares each time
+Implement method to print out the answer and any other relevant information when the puzzle is solved
+
+DONE:
+Implement methods to generate new circles and squares
+Implement method to ensure intersection of the circle and square
+
+
 =end
 
 class Circle
@@ -38,15 +56,13 @@ end
 
 class Square
 
-	attr_accessor :origin_x, :origin_y, :sideLength
+	attr_accessor :topRight_x, :topRight_y, :sideLength
 
 	def initialize()
-		@@x_range ||= 10
-		@@y_range ||= 10
 		@@s_range ||= 4
 
-		@origin_x = rand(@@x_range)
-		@origin_y = rand(@@y_range)
+		@topRight_x = 0
+		@topRight_y = 0
 		@sideLength = rand(@@s_range)
 	end
 
@@ -68,9 +84,6 @@ def generateCircle(x_range=nil, y_range=nil)
 end
 
 def generateSquare(x_range=nil, y_range=nil)
-	if x_range != nil && y_range != nil
-		Square.setOriginRange(x_range, y_range)
-	end
 	@square = Square.new()
 end
 
