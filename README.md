@@ -2,6 +2,12 @@
 
 A space for keeping all the programming challenges I've attempted. This repository has also been of use to gain some experience with the use of Git.
 
+#### Command Line Interface for APNS
+
+Create a command line interface to enable faster sending of push notifications with specific options enabled to iOS development apps, using [Houston](https://github.com/nomad/houston/).
+
+This challenge serves as both educational and practical - as well as learning how to make a tool for the command line, it will also enable me to automate push notification testing at work.
+
 ## Completed challenges
 
 #### Heavy Balls - Ruby
