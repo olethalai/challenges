@@ -128,8 +128,11 @@ def solve(ballsArray)
 	end
 	
 	# Check your efficiency by uncommenting the lines below
+	# Use with Ruby 1.9
 	# estimatedWeighsLeft = (Math.log(ballsArray.length, 3)).ceil
-	# puts "Estimated number of weighs left to determine heavy ball: #{estimatedWeighsLeft}"
+	# Use with Ruby 1.8
+	estimatedWeighsLeft = ((Math.log10(ballsArray.length)/Math.log10(3))).ceil
+	puts "Estimated number of weighs left to determine heavy ball: #{estimatedWeighsLeft}"
 	
 	# If there is only one ball left, the heavy ball has beed found!
 	if ballsArray.length == 1
