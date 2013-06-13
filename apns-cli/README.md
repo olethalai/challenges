@@ -48,10 +48,13 @@ You can change the environment to Production (rather than Development) using:
 
 	$ pushit push device_name -b 1 --environment :production
 
-Finally, you can send the `--debug` option with your command to enable debug logging. Debug logs will appear in blue, thanks to [colored](http://rubygems.org/gems/colored).
+If all has gone well, you should get a nice green message in your terminal window to tell you that the notification has been sent successfully.
+
+---
+
+Finally, you can send the `--debug` option on the `devices` and `push` commands to enable debug logging. Debug logs will appear in blue, thanks to [colored](http://rubygems.org/gems/colored).
 
 For any additional information, use the `help` option:
 
 	$ pushit help
 
-If all has gone well, you should get a nice green message in your terminal window to tell you that the notification has been sent successfully.
