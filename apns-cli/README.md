@@ -8,16 +8,17 @@ In addition to the regular push notification attributes, PushIt also supports li
 
 To show the list of available devices, use `$ pushit devices` to print a list of all the available devices, along with their tokens.
 
-You can filter the list of devices shown by device model. `$ pushit devices --filter "iPad"` will output all the iPads form your device list.
+You can filter the list of devices shown by device model. `$ pushit devices --filter "iPad"` will output all the iPads form your device list. The filter is case-insensitive.
 
-To populate the list of devices, add a `devices.rb` file to the `lib` directory. This file should include a `Devices` module which defines the `@devices` Hash. The structure for this is as follows:
+To populate the list of devices, add a `devices.yaml` file to the current directory. This file should include data about all the devices you'd like to be available to you, as it will define the `@devices` Hash. The structure for this is as follows:
 
-	module Devices
-		@devices = {
-			:first_device_name => {:device => "iPad Mini", :token => "<Your first device's remote notification token in Hexadecimal>"}
-			:second_device_name => {:device => "iPad 2", :token => "<Your second device's remote notification token in Hexadecimal>"}
-		}
-	end
+```yaml
+:device_name:
+  :model: iPhone 5
+  :token: <token goes here including the angle brackets>
+```
+
+Note that the keys start with `:` as the values are accessed using symbols, and that indentation must be 2 spaces, not a tab.
 
 ### push
 
@@ -43,9 +44,11 @@ The following options require numbers to be specified:
 
 `--newsstand` will set the `content-available` attribute to `1` if specified.
 
-Finally, you can change the environment to Production (rather than Development) using:
+You can change the environment to Production (rather than Development) using:
 
 	$ pushit push device_name -b 1 --environment :production
+
+Finally, you can send the `--debug` option with your command to enable debug logging. Debug logs will appear in blue, thanks to [colored](http://rubygems.org/gems/colored)
 
 For any additional information, use the `help` option:
 
