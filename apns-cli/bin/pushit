@@ -1,7 +1,14 @@
+#!/usr/bin/env ruby
+
 require 'rubygems'
 require 'colored'
 require 'commander/import'
-require 'devices.rb'
+require 'houston'
+# require File.expand_path('../devices.rb', __FILE__)
+
+# TODO: Enable custom device entry, through file or through adding and then printing to a file to be stored in the gem directory.
+
+HighLine.track_eof = false # Fix for built-in Ruby
 
 program :name, 'PushIt'
 program :version, '1.0'
@@ -12,36 +19,58 @@ program :help_formatter, :compact
 
 default_command :help
 
+@devices = {
+        :oletha => {:device => "iPad Mini", :token => "<13E2054F78B47FAB5032F232346392D6A232F62303659376378527E33BE4F5AD>"}
+    }
+
+# Convenience method for debug logging.
+# Takes a String as the log parameter.
+# Prints the log in blue.
+def debug_log (log)
+	puts log.blue if $DEBUG_MODE
+end
+
 command :devices do |c|
+
 	c.syntax = 'pushit devices [options]'
 	c.description = 'Prints out the list of available devices to push to.'
 
 	c.example 'Print the list.', 'pushit devices -f "mini"'
 
 	c.option '-f', '--filter STRING', 'Filters printed results by device type.'
+	c.option '-d', '--debug', 'Enables debug mode.'
 
 	c.action do |options|
+		$DEBUG_MODE = options.debug.nil? ? false : true
+
 		# Check that there is at least 1 device available
 		say_error "There are no available devices.".red and abort if @devices.empty?
 
 		# Filter the list if filtering has been requested.
 		if options.filter
 			filter = options.filter
-			filtered_devices = Hash.new
+			debug_log "filter: #{@filter}"
+			@filtered_devices = Hash.new
+			debug_log "Created filtered devices hash."
 			@devices.each do |device, info|
-				if device[:device].match(/#{filter}/)
-					filtered_devices[device] = info
+				debug_log "Checking for '#{@filter}' on #{device}."
+				if info[:device].match(/#{filter}/)
+					debug_log "Matched. Adding #{device} to filtered devices hash."
+					@filtered_devices[device] = info
 				end
 			end
+			debug_log "Filtering finished."
 
 			# Check that there was at least 1 result from the filtering
-			say_error "No devices matched your filter.".red and abort if @devices.empty?
+			say_error "No devices matched your filter.".red and abort if @filtered_devices.empty?
 		end
 
 		# Sends the filtered list to be printed if it exists.
-		device_info = filtered_devices ? filtered_devices : @devices
+		device_info = @filtered_devices ? @filtered_devices : @devices
+		debug_log @filtered_devices ? "Sending filtered devices list to be printed." : "Filtered devices undefined. Sending full device list to be printed."
 
 		# Print the list
+		debug_log "Commencing list printing..."
 		device_info.each do |device, info|
 			print "#{device}".bold
 
@@ -73,10 +102,12 @@ command :devices do |c|
 			print "#{info[:token]}".blue
 			print "\n"
 		end
+		debug_log "List printing complete."
 	end
 end
 
 command :push do |c|
+
 	c.syntax = 'pushit push DEVICE [options]'
 	c.description = 'Push a notification to the given device. Try running --help for options.'
 
@@ -96,19 +127,41 @@ command :push do |c|
 	c.option '-t', '--button STRING', 'Sets the action button on the notification. If no --button option is chosen, View will appear by default. Choose from: install, read, watch, browse, listen, visit.'
 
 	c.option '-e', '--environment ENV', [:production, :development], 'Environment to send push notification (production or development (default))'
-	
-	c.action do |devices, options|
-		# Ensures that a recipient device was specified.
-		say_error "Push aborted. One or more device references required.".red and abort if args.empty?
+	c.option '-d', '--debug', 'Enables debug mode.'
 
+	c.action do |chosenDevices, options|
+		$DEBUG_MODE = options.debug.nil? ? false : true
+
+		# Log devices specified.
+		if $DEBUG_MODE
+			print "Debug logs will appear in ".bold + "blue".bold.blue + ".\n".bold
+			debug_log chosenDevices.empty? ? "No devices specified." : "Devices specified:"
+			chosenDevices.each do |chosenDevice|
+				debug_log "#{chosenDevice}"
+			end
+			print "\n"
+		end
+
+		# Ensures that a recipient device was specified.
+		say_error "Push aborted. One or more device references required.".red and abort if chosenDevices.empty?
+		
+		# Ensures that data is available for the specified device.
+		chosenDevices.each do |chosenDevice|
+			if @devices[chosenDevice.to_sym].nil?
+				say_error "Push aborted. No data was found for #{chosenDevice}.".red and abort
+			end
+		end
+
+		debug_log "Setting environment..."
 		if options.environment
 			@environment = options.environment.downcase.to_sym
 			say_error "Invalid environment,'#{@environment}' (should be either :development or :production)" and abort unless [:development, :production].include?(@environment)
 		else
 			@environment = :development
 		end
+		debug_log "environment: #{@environment}"
 
-		@app = options.app if @app# This will be converted to the certificate filename later on.
+		@app = options.app if @app # This will be converted to the certificate filename later on.
 
 		@message = options.message
 		@badge = options.badge.nil? ? nil : options.badge.to_i
@@ -116,12 +169,21 @@ command :push do |c|
 		@newsstand = options.newsstand ? true : false
 		@issue_id = options.download.nil? ? nil : options.download.to_i
 
+		debug_log "app: #{@app}"
+		debug_log "message: #{@message}"
+		debug_log "badge: #{@badge}"
+		debug_log "sound: #{@sound}"
+		debug_log "newsstand: #{@newsstand}"
+		debug_log "issue_id: #{@issue_id}"
+
 		unless @message or @badge or @sound or @newsstand
+			debug_log "message, badge, sound and newsstand values not specified."
 			@message = ask_editor "Please enter a message."
 			say_error "Push aborted. You must include use least one of the message, badge, sound or newsstand options.".red and abort if @message.nil?
 		end
 
 		if options.link
+			debug_log "Setting link..."
 			case options.link.downcase
 			when 'web'
 				@link = 'http://www.google.com/'
@@ -140,18 +202,23 @@ command :push do |c|
 			else
 				say_error "Push aborted. Invalid link type.".red and abort
 			end
+			debug_log "link: #{@link}"
 		end
 
 		if options.button
+			debug_log "Setting button..."
 			button_title = options.button.capitalize
 			unless button_title == ('Install' or 'Read' or 'Watch' or 'Browse' or 'Listen' or 'Visit')
 				say_error "Push aborted. Invalid button title.".red and abort
 			end
 			@button = "APNSActionButton" + button_title
+			debug_log "button: #{@button}"
 		end
 
 		@notifications = []
-		devices.each do |device|
+		debug_log "Created notifications array."
+		chosenDevices.each do |device|
+			debug_log "Setting up notification for device: #{device}"
 			notification = Houston::Notification.new({})
 			notification.token = @devices[device.to_sym][:token]
 			notification.alert = @message if @message
@@ -160,26 +227,35 @@ command :push do |c|
 			notification.content-available = @newsstand if @newsstand
 
 			custom_payload = Hash.new
+			debug_log "Created custom payload hash."
 
-			# TODO: Find out what the actual names are for :issue and :label.
-			custom_payload.merge!({:issue => "#{@issue_id}"})
+			# TODO: Find out what the actual name is for :issue.
+			custom_payload.merge!({:issue => "#{@issue_id}"}) if @issue_id
 			custom_payload.merge!({:pmps => {:'link-url' => "#{@link}"}}) if @link
-			custom_payload.merge!({'alert' => {:body => "#{@message}", :label => "#{@button}"}}) if @button
+			custom_payload.merge!({'alert' => {:body => "#{@message}", :'action-loc-key' => "#{@button}"}}) if @button
 
+			debug_log "Merging custom payload..."
 			notification.custom_data.merge!(custom_payload)
 
+			debug_log "Adding notification to notifications array..."
 			@notifications << notification
+			debug_log "Notification added."
 		end
+		debug_log "All notifications added."
 
+		debug_log "Creating Houston Client..."
 		client = @environment == :production ? Houston::Client.production : Houston::Client.development
-		client.certificate = File.read(@app.nil? ? "#{@app}.pem" : "cert.pem")
+		debug_log "Setting certificate..."
+		client.certificate = File.read(@app.nil? ? "cert.pem" : "#{@app}.pem")
 		# client.passphrase = password("Please enter the password for the #{@app.capitalize} application certificate:", '*')
 
+		debug_log "Beginning push operation..."
 		begin
-			client.push(*notifications)
+			client.push(*@notifications)
 		rescue => message
 			say_error "Exception sending notification: #{message}".red and abort
 		end
+		debug_log "Push complete."
 
 		say_ok "Push notification send successful!".green
 	end
