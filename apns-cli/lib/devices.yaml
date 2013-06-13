@@ -1,0 +1,8 @@
+# See below for the expected format for device information.
+# :device_name:
+#   :model: iPhone 5
+#   :token: <token goes here including the angle brackets>
+
+:oletha:
+  :model: iPad Mini
+  :token: <13E2054F78B47FAB5032F232346392D6A232F62303659376378527E33BE4F5AD>

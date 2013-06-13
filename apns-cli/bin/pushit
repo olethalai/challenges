@@ -4,24 +4,23 @@ require 'rubygems'
 require 'colored'
 require 'commander/import'
 require 'houston'
+require 'yaml'
 # require File.expand_path('../devices.rb', __FILE__)
 
-# TODO: Enable custom device entry, through file or through adding and then printing to a file to be stored in the gem directory.
+# Possible future feature: Enable storing of device information within the gem, importing and exporting the .yaml file.
 
 HighLine.track_eof = false # Fix for built-in Ruby
 
 program :name, 'PushIt'
 program :version, '1.0'
-program :description, 'Sends push notifications to development iOS apps.'
+program :description, 'Sends push notifications to development iOS apps. Ensure that your certificate path is relative to your current directory.'
 
 program :help, 'Author', 'Oletha Lai'
 program :help_formatter, :compact
 
 default_command :help
 
-@devices = {
-        :oletha => {:device => "iPad Mini", :token => "<13E2054F78B47FAB5032F232346392D6A232F62303659376378527E33BE4F5AD>"}
-    }
+@devices = YAML::load_file "devices.yaml"
 
 # Convenience method for debug logging.
 # Takes a String as the log parameter.
@@ -48,13 +47,13 @@ command :devices do |c|
 
 		# Filter the list if filtering has been requested.
 		if options.filter
-			filter = options.filter
+			filter = options.filter.downcase
 			debug_log "filter: #{@filter}"
 			@filtered_devices = Hash.new
 			debug_log "Created filtered devices hash."
 			@devices.each do |device, info|
 				debug_log "Checking for '#{@filter}' on #{device}."
-				if info[:device].match(/#{filter}/)
+				if info[:model].downcase.match(/#{filter}/)
 					debug_log "Matched. Adding #{device} to filtered devices hash."
 					@filtered_devices[device] = info
 				end
@@ -86,9 +85,9 @@ command :devices do |c|
 				chars += 4
 			end
 
-			print "#{info[:device]}".green
+			print "#{info[:model]}".green
 
-			chars = info[:device].length
+			chars = info[:model].length
 			space_to_next_tab = (4 - (chars % 4))
 			if space_to_next_tab != 4
 				print "\t"
