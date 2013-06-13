@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.description = "Uses Houston (https://github.com/nomad/houston/) to send push notifications to iOS devices."
   s.authors     = ["Oletha Lai"]
   s.email       = 'oletha@gmail.com'
-  s.files       = Dir['bin/*'] + Dir['lib/*']
+  s.files       = Dir['bin/*']
 
   s.add_dependency "houston"
   s.add_dependency "colored"
