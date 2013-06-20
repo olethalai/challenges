@@ -120,7 +120,7 @@ command :push do |c|
 	c.option '-b', '--badge NUMBER', 'Sets the app badge when the notification is received.'
 	c.option '-s', '--sound STRING', 'Specifies a sound to be played when the notification is received.'
 	c.option '-n', '--newsstand', 'Adds content-available to the payload. Newsstand apps only.'
-	c.option '-d', '--download NUMBER', 'Sets the issue ID of the issue to be downloaded in the background.'
+	c.option '-i', '--issue NUMBER', 'Sets the issue ID of the issue to be downloaded in the background.'
 	
 	c.option '-l', '--link STRING', 'Sends a link of the given type. Choose from: web, itunes, appstore, email, page, location, telephone.'
 	c.option '-t', '--button STRING', 'Sets the action button on the notification. If no --button option is chosen, View will appear by default. Choose from: install, read, watch, browse, listen, visit.'
@@ -153,20 +153,20 @@ command :push do |c|
 
 		debug_log "Setting environment..."
 		if options.environment
-			@environment = options.environment.downcase.to_sym
-			say_error "Invalid environment,'#{@environment}' (should be either :development or :production)" and abort unless [:development, :production].include?(@environment)
+			@environment = options.environment
+			say_error "Invalid environment,'#{@environment}' (should be either development or production)" and abort unless [:development, :production].include?(@environment)
 		else
 			@environment = :development
 		end
 		debug_log "environment: #{@environment}"
 
-		@app = options.app if @app # This will be converted to the certificate filename later on.
+		@app = options.app if options.app # This will be converted to the certificate filename later on.
 
 		@message = options.message
 		@badge = options.badge.nil? ? nil : options.badge.to_i
 		@sound = options.sound
 		@newsstand = options.newsstand ? true : false
-		@issue_id = options.download.nil? ? nil : options.download.to_i
+		@issue_id = options.issue.nil? ? nil : options.issue.to_i
 
 		debug_log "app: #{@app}"
 		debug_log "message: #{@message}"
@@ -223,13 +223,12 @@ command :push do |c|
 			notification.alert = @message if @message
 			notification.badge = @badge if @badge
 			notification.sound = @sound if @sound
-			notification.content-available = @newsstand if @newsstand
+			notification.content_available = @newsstand if @newsstand
 
 			custom_payload = Hash.new
 			debug_log "Created custom payload hash."
 
-			# TODO: Find out what the actual name is for :issue.
-			custom_payload.merge!({:issue => "#{@issue_id}"}) if @issue_id
+			custom_payload.merge!({:new_issue_identifier => "#{@issue_id}"}) if @issue_id
 			custom_payload.merge!({:pmps => {:'link-url' => "#{@link}"}}) if @link
 			custom_payload.merge!({'alert' => {:body => "#{@message}", :'action-loc-key' => "#{@button}"}}) if @button
 
