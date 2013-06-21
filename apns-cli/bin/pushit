@@ -13,14 +13,18 @@ HighLine.track_eof = false # Fix for built-in Ruby
 
 program :name, 'PushIt'
 program :version, '1.0'
-program :description, 'Sends push notifications to development iOS apps. Ensure that your certificate path is relative to your current directory.'
+program :description, 'Sends push notifications to iOS apps. Ensure that your certificate path is relative to your current directory.'
 
 program :help, 'Author', 'Oletha Lai'
 program :help_formatter, :compact
 
 default_command :help
 
-@devices = YAML::load_file "devices.yaml"
+begin
+	@devices = YAML::load_file "devices.yaml"
+rescue
+	say_error 'No devices.yaml file was found.'.red
+end
 
 # Convenience method for debug logging.
 # Takes a String as the log parameter.
@@ -34,12 +38,12 @@ command :devices do |c|
 	c.syntax = 'pushit devices [options]'
 	c.description = 'Prints out the list of available devices to push to.'
 
-	c.example 'Print the list.', 'pushit devices -f "mini"'
+	c.example 'Print the list.', 'pushit devices -f mini'
 
 	c.option '-f', '--filter STRING', 'Filters printed results by device type.'
 	c.option '-d', '--debug', 'Enables debug mode.'
 
-	c.action do |options|
+	c.action do |args, options|
 		$DEBUG_MODE = options.debug.nil? ? false : true
 
 		# Check that there is at least 1 device available
@@ -47,7 +51,7 @@ command :devices do |c|
 
 		# Filter the list if filtering has been requested.
 		if options.filter
-			filter = options.filter.downcase
+			@filter = options.filter.downcase
 			debug_log "filter: #{@filter}"
 			@filtered_devices = Hash.new
 			debug_log "Created filtered devices hash."
@@ -110,11 +114,11 @@ command :push do |c|
 	c.syntax = 'pushit push DEVICE [options]'
 	c.description = 'Push a notification to the given device. Try running --help for options.'
 
-	c.example 'Send the reference name for your device and any additional options.', 'pushit push laipad --web-link -i'
+	c.example 'Send the reference name for your device and any additional options.', 'pushit push johns_ipad --link web -m This is a web link! -b 1'
 
 	# The command should send different payloads based on the options specified.
 
-	c.option '-a', '--app STRING', 'Specify the app you want the notification to be sent to. Ensure you have the certificate for the app named <app>.pem in this directory.'
+	c.option '-a', '--app STRING', 'Specify the app you want the notification to be sent to. Ensure you have the certificate for the app named <app>.pem in this directory. You could also specify the path to the certificate from this directory, less ".pem".'
 
 	c.option '-m', '--message STRING', 'The message to appear on the notification.'
 	c.option '-b', '--badge NUMBER', 'Sets the app badge when the notification is received.'
