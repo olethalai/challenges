@@ -7,6 +7,7 @@ require 'houston'
 require 'yaml'
 # require File.expand_path('../devices.rb', __FILE__)
 
+# TODO: Add an option for Cucumber tests to use so that they can determine the final contents of the payload.
 # Possible future feature: Enable storing of device information within the gem, importing and exporting the .yaml file.
 
 HighLine.track_eof = false # Fix for built-in Ruby
