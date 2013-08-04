@@ -2,6 +2,8 @@
 
 A space for keeping all the programming challenges I've attempted. This repository has also been of use to gain some experience with the use of Git.
 
+## Active Challenges
+
 #### Meta Noughts And Crosses
 
 Create a playable game of Meta Noughts And Crosses. This would be a great app for iOS 7, with the new zoom-in/zoom-out style of navigation.
@@ -14,7 +16,13 @@ Create a playable game of Meta Noughts And Crosses. This would be a great app fo
 
 Bonus points for creating AI.
 
-## Completed challenges
+## Completed Challenges
+
+#### Lighthouse Archiving Script - Ruby
+
+Build a script which interacts with the Lighthouse API to download ticket information and any attachments from any given project, and store them in appropriate directories.
+
+This script fulfils a practical purpose - when migrating to another bug tracking tool from Lighthouse, I found that there was not an easy way to download all the data for existing projects. In order to continue to be able to refer back to past tickets, this script can be run to download and store all ticket data before the Lighthouse account is closed.
 
 #### Command Line Interface for APNS - Ruby
 
