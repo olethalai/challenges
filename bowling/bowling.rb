@@ -20,6 +20,12 @@ Tenpin Bowling
 
 Write a function which calculates the score of a game of Tenpin Bowling.
 
+TODO
+
+- Implement update_scores
+- Implement print_scores
+- Implement frame 10 logic
+
 =end
 
 require 'rubygems'
@@ -56,6 +62,14 @@ def new_game(players=1)
 
 	@current_frame = 1
 	@board = Array.new(players)
+	@scores = Array.new(players)
+
+	@scores.length.times do |i|
+		@scores[i] = Array.new(10)
+		10.times do |j|
+			@scores[i][j] = Hash.new
+		end
+	end
 
 end
 
@@ -66,19 +80,35 @@ def new_frame
 	@board.length.times do |i|
 		@board[i] ||= Array.new
 		@board[i].push(Frame.new)
+
 	end
 
 end
 
-def update_scores(first_roll, second_roll)
+def update_scores
 
 	# Update the score for the active player!
+	# @first_roll and @second_roll are now instance variables, so don't need to be passed in
 
 end
 
 def print_scores
 
 	# Print all the scores!
+
+end
+
+def distribute_bonus(bonus_count, offset_from_current_frame)
+
+	# Add the value of the second roll if there are 2 bonus balls remaining for the frame
+	if bonus_count > 1 and @second_roll != nil
+		@board[@active_player - 1][@current_frame - offset_from_current_frame].add_bonus(@second_roll)
+
+	# Add the value of the first roll if one or more bonus balls are remaining for the frame
+	elsif bonus_count > 0
+		@board[@active_player - 1][@current_frame - offset_from_current_frame].add_bonus(@first_roll)
+
+	end
 
 end
 
@@ -94,15 +124,15 @@ def play_ball(players=1)
 		@active_player = 1
 
 		@board.each do |player_frames|
-			first_roll = nil
-			second_roll = nil
+			@first_roll = nil
+			@second_roll = nil
 
-			frame = player_frames[@current_frame - 1]
-			first_roll = frame.play
+			@active_frame = player_frames[@current_frame - 1]
+			@first_roll = @active_frame.play
 
 			# Don't play a second roll if the first roll was a strike
-			if !frame.strike
-				second_roll = frame.play
+			if !@active_frame.strike
+				@second_roll = @active_frame.play
 
 			end
 			
@@ -111,26 +141,18 @@ def play_ball(players=1)
 				# It is possible that the two most recent frames are still waiting on bonus scores
 				# Check the previous frame
 				balls_remaining_in_previous_frame = player_frames[@current_frame - 2].remaining_bonus_balls
-
-				# Add the value of the first roll if one or more bonus balls are remaining for the frame
+				
 				if balls_remaining_in_previous_frame > 0
-					player_frames[@current_frame - 2].add_bonus(first_roll)
-
-				end
-
-				# Add the value of the second roll if there are 2 bonus balls remaining for the frame
-				if balls_remaining_in_previous_frame > 1 and second_roll != nil
-					player_frames[@current_frame - 2].add_bonus(second_roll)
+					distribute_bonus(balls_remaining_in_previous_frame, 2)
+				
 				end
 
 				# Only check the frame before last if there are more than 2 frames, otherwise the wrong frame will be returned
 				if @current_frame > 2
 					balls_remaining_in_frame_before_last = player_frames[@current_frame - 3].remaining_bonus_balls
-
-					# Add the value of the first roll if a bonus ball remains for the frame
-					# The second frame should only ever have 1 or 0 bonus balls remaining
+					
 					if balls_remaining_in_frame_before_last > 0
-						player_frames[@current_frame - 3].add_bonus(first_roll)
+						distribute_bonus(balls_remaining_in_frame_before_last, 3)
 
 					end
 
@@ -138,7 +160,7 @@ def play_ball(players=1)
 
 			end
 
-			update_scores(first_roll, second_roll)
+			update_scores
 			print_scores
 			@active_player += 1
 
@@ -148,6 +170,9 @@ def play_ball(players=1)
 		@current_frame += 1
 
 	end
+
+	# Roll any remaining bonus balls
+
 end
 
 
@@ -246,6 +271,8 @@ class Frame
 
 	def add_bonus(bonus_score)
 
+		debug_log "Bonus balls remaining: #{@remaining_bonus_balls}"
+
 		if @remaining_bonus_balls > 0
 			@score += bonus_score
 			@remaining_bonus_balls -= 1
@@ -273,4 +300,4 @@ class Frame
 
 end
 
-play_ball
+play_ball(3)
