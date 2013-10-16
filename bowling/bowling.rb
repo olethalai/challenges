@@ -54,7 +54,7 @@ end
 
 def new_game(players=1)
 
-	@current_frame = 0
+	@current_frame = 1
 	@board = Array.new(players)
 
 end
