@@ -23,7 +23,6 @@ Write a function which calculates the score of a game of Tenpin Bowling.
 TODO
 
 - Implement frame 10 logic
-- Correct calculation of strike scores (see example buggy output below)
 - Correct cumulative calculation of frame scores (see example buggy output below)
 
 -------------------------------------------------------------------
@@ -311,8 +310,10 @@ def distribute_bonus(bonus_count, offset_from_current_frame)
 	if bonus_count > 1 and @second_roll != nil
 		@board[@active_player - 1][@current_frame - offset_from_current_frame].add_bonus(@second_roll)
 
+	end
+
 	# Add the value of the first roll if one or more bonus balls are remaining for the frame
-	elsif bonus_count > 0
+	if bonus_count > 0
 		@board[@active_player - 1][@current_frame - offset_from_current_frame].add_bonus(@first_roll)
 
 	end
@@ -363,6 +364,7 @@ def play_ball(players=1)
 					balls_remaining_in_frame_before_last = player_frames[@current_frame - 3].remaining_bonus_balls
 					
 					if balls_remaining_in_frame_before_last > 0
+						debug_log "Distributing bonus for frame before last..."
 						distribute_bonus(balls_remaining_in_frame_before_last, 3)
 
 					end
@@ -485,8 +487,11 @@ class Frame
 		debug_log "Bonus balls remaining: #{@remaining_bonus_balls}"
 
 		if @remaining_bonus_balls > 0
+			debug_log "Adding #{bonus_score} to score."
 			@score += bonus_score
+			debug_log "New frame score is #{@score}."
 			@remaining_bonus_balls -= 1
+			debug_log "There's now #{@remaining_bonus_balls} bonus ball(s) remaining."
 		
 		else
 			error_log "There are no remaining bonus balls. Bonus score not added."
