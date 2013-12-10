@@ -22,9 +22,14 @@ Write a function which calculates the score of a game of Tenpin Bowling.
 
 TODO
 
-- Implement update_scores
-- Implement print_scores
 - Implement frame 10 logic
+- Correct calculation of strike scores (see example buggy output below)
+- Correct cumulative calculation of frame scores (see example buggy output below)
+
+-------------------------------------------------------------------
+| 8 1 | 3 1 | 8 / | 2 / | 8 0 | 1 5 |   X | 7 / | 4 4 | 1 5 |
+|   9 |   4 |  12 |  18 |   8 |   6 |  17 |  14 |   8 |   6 | 102 |
+-------------------------------------------------------------------
 
 =end
 
@@ -62,12 +67,12 @@ def new_game(players=1)
 
 	@current_frame = 1
 	@board = Array.new(players)
-	@scores = Array.new(players)
+	@player_scores = Array.new(players)
 
-	@scores.length.times do |i|
-		@scores[i] = Array.new(10)
+	@player_scores.length.times do |i|
+		@player_scores[i] = Array.new(10)
 		10.times do |j|
-			@scores[i][j] = Hash.new
+			@player_scores[i][j] = Array.new(2)
 		end
 	end
 
@@ -75,7 +80,7 @@ end
 
 def new_frame
 
-	debug_log "Creating new frames for round #{@current_frame + 1}"
+	debug_log "Creating new frames for round #{@current_frame}"
 
 	@board.length.times do |i|
 		@board[i] ||= Array.new
@@ -89,12 +94,214 @@ def update_scores
 
 	# Update the score for the active player!
 	# @first_roll and @second_roll are now instance variables, so don't need to be passed in
+	# Add the first and second rolls to the active player's score array as an array of 2 roll values
+
+	# Create the arrays for holding the individual roll scores if it does not already exist
+	@player_scores[@active_player - 1] ||= Array.new(10)
+	@player_scores[@active_player - 1][@current_frame - 1] ||= Array.new(2)
+
+	# Update the scores to include this frame's rolls
+	@player_scores[@active_player - 1][@current_frame - 1][0] = @first_roll
+	@player_scores[@active_player - 1][@current_frame - 1][1] = @second_roll
+
+end
+
+def line_break
+
+	return "-------------------------------------------------------------------\n"
+
+end
+
+def roll_score_out(first_roll, second_roll, frame_count)
+
+	# debug_log "Printing roll scores for frame #{frame_count}..."
+
+	if frame_count == 1
+		print line_break
+
+	end
+
+	print "| "
+
+	if first_roll == 10
+		# Strike!
+		first_roll = " "
+		second_roll = "X"
+
+	elsif first_roll + second_roll == 10
+		# Spare!
+		second_roll = "/"
+
+	end
+
+	if frame_count == 10 and second_roll == "X"
+		print "#{second_roll} "
+
+	else
+		print "#{first_roll} #{second_roll} "
+
+	end
+
+	if frame_count == 10
+		if @first_frame_ten_bonus
+			if @first_frame_ten_bonus == 10
+				@first_frame_ten_bonus = "X"
+
+			end
+			print "#{@first_frame_ten_bonus} "
+
+			if @second_frame_ten_bonus
+				if @first_frame_ten_bonus + @second_frame_ten_bonus == 10
+					@second_frame_ten_bonus = "/"
+
+				# It's possible that both frame ten bonuses were strikes, which wouldn't be picked out by the above clause
+				elsif @second_frame_ten_bonus == 10
+					@second_frame_ten_bonus = "X"
+
+				end
+
+			end
+			print "#{@second_frame_ten_bonus} "
+
+		end
+
+		print "|"
+
+	end
+
+end
+
+def frame_score_out(frame_score, frame_count)
+
+	# debug_log " Printing frame scores for frame #{frame_count}..."
+
+	# Frame scores should line up with the roll scores
+	if frame_count == 1
+		print "\n"
+
+	end
+
+	print "| "
+
+	# Frame scores will be right aligned and will never be more than 3 digits long
+	if frame_score.class.to_s == "String"
+		frame_score = 1000
+
+	end
+
+	if frame_score < 10
+		print " "
+
+	end
+
+	if frame_score < 100
+		print " "
+
+	end
+
+	# A frame score of 1000 represents a frame which has not yet come to pass
+	if frame_score == 1000
+		print "    "
+
+	else
+		print "#{frame_score} "
+
+	end
+
+	if frame_count == 10
+		print "|"
+
+	end
+
+end
+
+def total_score_out(total_score)
+
+	if total_score < 10
+		print " "
+
+	end
+
+	if total_score < 100
+		print " "
+
+	end
+
+	print " #{total_score} |\n"
 
 end
 
 def print_scores
 
-	# Print all the scores!
+	debug_log "Printing scores..."
+
+	# For each player...
+	player_index = 0
+	@player_scores.each do |game_scores|
+		break if game_scores.nil?
+		# Print the player's scores from the @player_scores array
+		frame_count = 1
+		game_scores.each do |round_scores|
+			if !round_scores[0].nil?
+				roll_score_out(round_scores[0], round_scores[1], frame_count)
+				frame_count += 1
+			end
+
+		end
+
+		# Fill in the output for rolls which have not yet come to pass
+		while frame_count <= 10
+			roll_score_out(" ", " ", frame_count)
+			frame_count += 1
+		end
+
+		# Print the final score of the player's Frames if it's not false
+		frame_count = 1
+		@board[player_index].each do |frame|
+			frame_score = frame.final_score
+
+			# Frame score will be false if the final score has not been determined
+			if frame_score
+				frame_score_out(frame_score, frame_count)
+
+			else
+				break
+
+			end
+
+			frame_count += 1
+
+		end
+			
+		# Fill in the output for rolls which have not yet come to pass
+		while frame_count <= 10
+			frame_score_out(" ", frame_count)
+			frame_count += 1
+
+		end
+
+
+		# Calculate the total score for this player
+		player_total_score = 0
+
+		@board[player_index].each do |frame|
+			final_score = frame.final_score
+
+			# final_score will be false if the final score cannot be determined yet
+			if final_score
+				player_total_score += final_score
+
+			end
+
+		end
+
+		# Print the total for this player
+		total_score_out(player_total_score)
+
+		player_index += 1
+
+	end
+	print line_break
 
 end
 
@@ -130,9 +337,13 @@ def play_ball(players=1)
 			@active_frame = player_frames[@current_frame - 1]
 			@first_roll = @active_frame.play
 
+			debug_log "Scored #{@first_roll} on the first go."
+
 			# Don't play a second roll if the first roll was a strike
 			if !@active_frame.strike
 				@second_roll = @active_frame.play
+
+			debug_log "Scored #{@second_roll} on the second go."
 
 			end
 			
