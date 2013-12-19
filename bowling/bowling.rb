@@ -107,11 +107,11 @@ end
 
 def line_break
 
-	return "-------------------------------------------------------------------\n"
+	return "---------------------------------------------------------------------\n"
 
 end
 
-def roll_score_out(first_roll, second_roll, frame_count)
+def roll_score_out(first_roll, second_roll, frame_count, player_index)
 
 	# debug_log "Printing roll scores for frame #{frame_count}..."
 
@@ -141,34 +141,54 @@ def roll_score_out(first_roll, second_roll, frame_count)
 
 	end
 
-	if frame_count == 10
-		if @first_frame_ten_bonus
-			if @first_frame_ten_bonus == 10
-				@first_frame_ten_bonus = "X"
-
-			end
-			print "#{@first_frame_ten_bonus} "
-
-			if @second_frame_ten_bonus
-				if @first_frame_ten_bonus + @second_frame_ten_bonus == 10
-					@second_frame_ten_bonus = "/"
-
-				# It's possible that both frame ten bonuses were strikes, which wouldn't be picked out by the above clause
-				elsif @second_frame_ten_bonus == 10
-					@second_frame_ten_bonus = "X"
-
-				end
-
-			end
-			print "#{@second_frame_ten_bonus} "
-
-		end
-
-		print "|"
+	# Print any bonuses or additional whitespace if the player has completed frame 10
+	if frame_count == 10 and first_roll != "  " and second_roll != "  "
+		frame_ten = @board[player_index][frame_count - 1]
+		frame_ten_bonuses_out(frame_ten.first_frame_ten_bonus, frame_ten.second_frame_ten_bonus, player_index)
 
 	end
 
 end
+
+def frame_ten_bonuses_out(bonus_1, bonus_2, player_index)
+	if @current_frame == 10
+
+		if bonus_1
+			if bonus_1 == 10
+				bonus_1 = "X"
+
+			elsif !bonus_2
+				# No-op
+				# Prevents conversion errors if bonus_2 is not an integer for the following conditionals
+			
+			elsif bonus_1 + bonus_2 == 10
+				bonus_2 = "/"
+
+			elsif bonus_2 == 10
+					bonus_2 = "X"
+
+			end
+			print "#{bonus_1} "
+
+			if bonus_2
+				print "#{bonus_2} "
+
+			end
+
+		else
+			print "  "
+
+		end
+
+		print "|     |"
+
+	else
+		error_log "It's not frame ten, cannot print frame 10 bonuses."
+
+	end
+
+end
+
 
 def frame_score_out(frame_score, frame_count)
 
@@ -208,7 +228,7 @@ def frame_score_out(frame_score, frame_count)
 	end
 
 	if frame_count == 10
-		print "|"
+		print "  |"
 
 	end
 
@@ -242,16 +262,35 @@ def print_scores
 		frame_count = 1
 		game_scores.each do |round_scores|
 			if !round_scores[0].nil?
-				roll_score_out(round_scores[0], round_scores[1], frame_count)
+				player_index = @player_scores.index(game_scores)
+				roll_score_out(round_scores[0], round_scores[1], frame_count, player_index)
+
+				if frame_count == 10
+					# Print bonus scores for frame 10
+					
+					game_scores.index
+
+				end
+
 				frame_count += 1
+
 			end
 
 		end
 
 		# Fill in the output for rolls which have not yet come to pass
-		while frame_count <= 10
-			roll_score_out(" ", " ", frame_count)
+		while frame_count < 10
+			roll_score_out(" ", " ", frame_count, player_index)
 			frame_count += 1
+
+		end
+
+		# Prints the frame ten and total placeholders
+		# If frame 10 has scores, then spacing will be sorted already and frame_count will be 11
+		if frame_count == 10
+			roll_score_out("  ", "  ", frame_count, player_index)
+			print "|     |"
+
 		end
 
 		# Print the final score of the player's Frames if it's not false
@@ -373,6 +412,42 @@ def play_ball(players=1)
 
 			end
 
+			# Frame ten may require additional bonus ball rolls
+			if @current_frame == 10
+
+				frame_ten = player_frames[@current_frame - 1]
+				debug_log "There are #{frame_ten.remaining_bonus_balls} bonus balls remaining for frame 10."
+
+				# Bowl another ball if frame ten has bonus balls to be accounted for (max of 2 balls)
+				if frame_ten.remaining_bonus_balls > 0
+					debug_log "Bowling bonus ball 1..."
+					# Pins are reset for bonus balls
+					frame_ten.first_frame_ten_bonus = frame_ten.knocked_pins
+					frame_ten.add_bonus(frame_ten.first_frame_ten_bonus)
+
+					# Bowl another bonus ball if there is one remaining
+					if frame_ten.remaining_bonus_balls > 0
+						debug_log "Bowling bonus ball 2..."
+
+						# Pins are reset if the last bowl was a strike
+						# Strike logic doesn't apply on the frame 10 bonus balls
+						if frame_ten.first_frame_ten_bonus == 10
+							debug_log "Last bowl was a strike; resetting pins."
+							frame_ten.second_frame_ten_bonus = frame_ten.knocked_pins
+
+						else
+							frame_ten.second_frame_ten_bonus = frame_ten.knocked_pins(10 - frame_ten.first_frame_ten_bonus)
+
+						end
+						
+						frame_ten.add_bonus(frame_ten.second_frame_ten_bonus)
+
+					end
+
+				end
+
+			end
+
 			update_scores
 			print_scores
 			@active_player += 1
@@ -384,7 +459,6 @@ def play_ball(players=1)
 
 	end
 
-	# Roll any remaining bonus balls
 
 end
 
@@ -404,7 +478,7 @@ end
 
 class Frame
 
-	attr_accessor :roll, :strike, :spare, :remaining_bonus_balls, :score
+	attr_accessor :roll, :strike, :spare, :remaining_bonus_balls, :score, :first_frame_ten_bonus, :second_frame_ten_bonus
 
 	def initialize
 
@@ -413,6 +487,8 @@ class Frame
 		@spare = false
 		@remaining_bonus_balls = 0
 		@score = nil
+		@first_frame_ten_bonus = nil
+		@second_frame_ten_bonus = nil
 
 	end
 
@@ -511,8 +587,6 @@ class Frame
 		return false
 
 	end
-
-	private :knocked_pins
 
 end
 
