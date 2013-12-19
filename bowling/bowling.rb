@@ -22,7 +22,6 @@ Write a function which calculates the score of a game of Tenpin Bowling.
 
 TODO
 
-- Implement frame 10 logic
 - Correct cumulative calculation of frame scores (see example buggy output below)
 
 -------------------------------------------------------------------
@@ -427,6 +426,14 @@ def play_ball(players=1)
 					frame_ten.first_frame_ten_bonus = frame_ten.knocked_pins
 					frame_ten.add_bonus(frame_ten.first_frame_ten_bonus)
 
+					# It's possible for frame 9 to have one remaining bonus ball at this point
+					balls_remaining_in_previous_frame = player_frames[@current_frame - 2].remaining_bonus_balls
+					
+					if balls_remaining_in_previous_frame > 0
+						@board[@active_player - 1][@current_frame - 2].add_bonus(frame_ten.first_frame_ten_bonus)
+					
+					end
+
 					# Bowl another bonus ball if there is one remaining
 					if frame_ten.remaining_bonus_balls > 0
 						debug_log "Bowling bonus ball 2..."
@@ -435,7 +442,7 @@ def play_ball(players=1)
 						# Strike logic doesn't apply on the frame 10 bonus balls
 						if frame_ten.first_frame_ten_bonus == 10
 							debug_log "Last bowl was a strike; resetting pins."
-							frame_ten.second_frame_ten_bonus = frame_ten.knocked_pins
+							frame_ten.second_frame_ten_bonus = frame_ten.knocked_pins(10)
 
 						else
 							frame_ten.second_frame_ten_bonus = frame_ten.knocked_pins(10 - frame_ten.first_frame_ten_bonus)
@@ -592,4 +599,4 @@ class Frame
 
 end
 
-play_ball(3)
+play_ball(8)
