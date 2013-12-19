@@ -203,6 +203,11 @@ def frame_score_out(frame_score, frame_count)
 
 	print "| "
 
+	if frame_count == 10
+		print "  "
+
+	end
+
 	# Frame scores will be right aligned and will never be more than 3 digits long
 	if frame_score.class.to_s == "String"
 		frame_score = 1000
@@ -224,12 +229,12 @@ def frame_score_out(frame_score, frame_count)
 		print "    "
 
 	else
-		print "#{frame_score} "
+		print "#{frame_score} ".bold
 
 	end
 
 	if frame_count == 10
-		print "  |"
+		print "|"
 
 	end
 
@@ -320,27 +325,52 @@ def print_scores
 		end
 
 
-		# Calculate the total score for this player
-		player_total_score = 0
+		# # Calculate the total score for this player
+		# player_total_score = 0
 
-		@board[player_index].each do |frame|
-			final_score = frame.final_score
+		# @board[player_index].each do |frame|
+		# 	final_score = frame.final_score
 
-			# final_score will be false if the final score cannot be determined yet
-			if final_score
-				player_total_score += final_score
+		# 	# final_score will be false if the final score cannot be determined yet
+		# 	if final_score
+		# 		player_total_score += final_score
 
-			end
+		# 	end
 
-		end
+		# end
 
 		# Print the total for this player
-		total_score_out(player_total_score)
+		total_score_out(get_player_score_at_frame(player_index, @current_frame))
 
 		player_index += 1
 
 	end
 	print line_break
+
+end
+
+def get_player_score_at_frame(player_index, frame_number)
+
+	# To be more efficient, this function should probably store the values it has for various frames as it calculates them and only re-calculate new scores
+	score = 0
+	i = 0
+
+	while i < frame_number
+		frame = @board[player_index][i]
+
+		final_score = frame.final_score
+
+		# final_score will be false if the final score cannot be determined yet
+		if final_score
+			score += final_score
+
+		end
+
+		i += 1
+
+	end
+
+	return score
 
 end
 
