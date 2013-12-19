@@ -438,7 +438,7 @@ def play_ball(players=1)
 			if @current_frame == 10
 
 				frame_ten = player_frames[@current_frame - 1]
-				debug_log "There are #{frame_ten.remaining_bonus_balls} bonus balls remaining for frame 10."
+				debug_log "Bonus balls remaining for frame 10: #{@remaining_bonus_balls}"
 
 				# Bowl another ball if frame ten has bonus balls to be accounted for (max of 2 balls)
 				if frame_ten.remaining_bonus_balls > 0
@@ -597,7 +597,7 @@ class Frame
 			@score += bonus_score
 			debug_log "New frame score is #{@score}."
 			@remaining_bonus_balls -= 1
-			debug_log "There's now #{@remaining_bonus_balls} bonus ball(s) remaining."
+			debug_log "Bonus balls remaining: #{@remaining_bonus_balls}"
 		
 		else
 			error_log "There are no remaining bonus balls. Bonus score not added."
