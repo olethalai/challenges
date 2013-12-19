@@ -164,7 +164,9 @@ def frame_ten_bonuses_out(bonus_1, bonus_2, player_index)
 			elsif bonus_1 + bonus_2 == 10
 				bonus_2 = "/"
 
-			elsif bonus_2 == 10
+			end
+
+			if bonus_2 == 10
 					bonus_2 = "X"
 
 			end
