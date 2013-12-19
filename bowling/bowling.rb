@@ -20,15 +20,6 @@ Tenpin Bowling
 
 Write a function which calculates the score of a game of Tenpin Bowling.
 
-TODO
-
-- Correct cumulative calculation of frame scores (see example buggy output below)
-
--------------------------------------------------------------------
-| 8 1 | 3 1 | 8 / | 2 / | 8 0 | 1 5 |   X | 7 / | 4 4 | 1 5 |
-|   9 |   4 |  12 |  18 |   8 |   6 |  17 |  14 |   8 |   6 | 102 |
--------------------------------------------------------------------
-
 =end
 
 require 'rubygems'
@@ -38,7 +29,7 @@ require 'colored'
 # Debug logs only appear if $DEBUG_MODE = true
 # Error and success logs always appear
 
-$DEBUG_MODE = true
+$DEBUG_MODE = false
 
 def debug_log(message)
 
@@ -306,7 +297,7 @@ def print_scores
 
 			# Frame score will be false if the final score has not been determined
 			if frame_score
-				frame_score_out(frame_score, frame_count)
+				frame_score_out(get_player_score_at_frame(player_index, frame_count), frame_count)
 
 			else
 				break
@@ -345,7 +336,7 @@ def print_scores
 		player_index += 1
 
 	end
-	print line_break
+	print line_break + "\n"
 
 end
 
@@ -629,4 +620,4 @@ class Frame
 
 end
 
-play_ball(8)
+play_ball(3)
