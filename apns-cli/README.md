@@ -44,6 +44,8 @@ The following options require numbers to be specified:
 
 `--newsstand` will set the `content-available` attribute to `1` if specified.
 
+`--payload` will print the payload of the notification to the terminal just before it is sent.
+
 You can change the environment to Production (rather than Development) using:
 
 	$ pushit push device_name -b 1 --environment :production

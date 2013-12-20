@@ -115,7 +115,7 @@ command :push do |c|
 	c.syntax = 'pushit push DEVICE [options]'
 	c.description = 'Push a notification to the given device. Try running --help for options.'
 
-	c.example 'Send the reference name for your device and any additional options.', 'pushit push johns_ipad --link web -m This is a web link! -b 1'
+	c.example 'Send the reference name for your device and any additional options.', 'pushit push johns_ipad --link web -m "This is a web link." -b 1'
 
 	# The command should send different payloads based on the options specified.
 
@@ -128,10 +128,11 @@ command :push do |c|
 	c.option '-i', '--issue NUMBER', 'Sets the issue ID of the issue to be downloaded in the background.'
 	
 	c.option '-l', '--link STRING', 'Sends a link of the given type. Choose from: web, itunes, appstore, email, page, location, telephone.'
-	c.option '-t', '--button STRING', 'Sets the action button on the notification. If no --button option is chosen, View will appear by default. Choose from: install, read, watch, browse, listen, visit.'
+	c.option '-u', '--button STRING', 'Sets the action button on the notification. If no --button option is chosen, View will appear by default. Choose from: install, read, watch, browse, listen, visit.'
 
 	c.option '-e', '--environment ENV', [:production, :development], 'Environment to send push notification (production or development (default))'
 	c.option '-d', '--debug', 'Enables debug mode.'
+	c.option '-p', '--payload', 'Prints out the payload used for the notification just before it is sent.'
 
 	c.action do |chosenDevices, options|
 		$DEBUG_MODE = options.debug.nil? ? false : true
@@ -190,7 +191,7 @@ command :push do |c|
 			debug_log "Setting link..."
 			case options.link.downcase
 			when 'web'
-				@link = 'http://www.google.com/'
+				@link = 'www.youtube.com/watch?v=dQw4w9WgXcQ‎'
 			when 'itunes'
 				@link = 'itms://itunes.apple.com/gb/album/insomnia-best-faithless/id305775034'
 			when 'appstore'
@@ -225,7 +226,7 @@ command :push do |c|
 			debug_log "Setting up notification for device: #{device}"
 			notification = Houston::Notification.new({})
 			notification.token = @devices[device.to_sym][:token]
-			notification.alert = @message if @message
+			notification.alert = @message if @message and !@button
 			notification.badge = @badge if @badge
 			notification.sound = @sound if @sound
 			notification.content_available = @newsstand if @newsstand
@@ -235,14 +236,24 @@ command :push do |c|
 
 			custom_payload.merge!({:new_issue_identifier => "#{@issue_id}"}) if @issue_id
 			custom_payload.merge!({:pmps => {:'link-url' => "#{@link}"}}) if @link
-			custom_payload.merge!({'alert' => {:body => "#{@message}", :'action-loc-key' => "#{@button}"}}) if @button
+			custom_payload.merge!({:aps => {'alert' => {:body => "#{@message}", :'action-loc-key' => "#{@button}"}}}) if @button
 
 			debug_log "Merging custom payload..."
-			notification.custom_data.merge!(custom_payload)
+			debug_log "Custom payload = #{custom_payload}"
+			debug_log "Custom data before: #{notification.custom_data}"
+			notification.custom_data = custom_payload
+			debug_log "Custom data after: #{notification.custom_data}"
 
 			debug_log "Adding notification to notifications array..."
 			@notifications << notification
 			debug_log "Notification added."
+			if options.payload
+				# print "#{notification.payload}"
+				print_payload(notification.payload)
+				print "\n"
+			end
+
+
 		end
 		debug_log "All notifications added."
 
@@ -263,5 +274,25 @@ command :push do |c|
 		say_ok "Push notification send successful!".green
 	end
 end
+
+def print_payload(payload)
+	# print "payload: #{payload}"
+	first = true
+	print "{ "
+	payload.each do |k, v|
+		print ", " unless first
+		print "#{k} : "
+			# print "\nv was #{v.class}\n".blue
+		if v.class == {}.class
+			# print "\nv was #{v.class}\n".green
+			print_payload(v)
+		else
+			print "#{v}"
+		end
+		first = false
+	end
+	print " }"
+end
+
 
 

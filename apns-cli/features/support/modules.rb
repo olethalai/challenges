@@ -66,6 +66,18 @@ module CommandBuilder
 		return @options
 	end
 
+	def get_key(option)
+		key = nil
+		case option
+		when 'badge'
+			key = :badge
+		else
+			raise "Option not supported: #{option_name}"
+		end
+
+		return key
+	end
+
 	# Returns the text to be added to the terminal command in order to pass the given option
 	def get_option(option_name)
 		option = nil
