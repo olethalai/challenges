@@ -2,6 +2,10 @@
 
 A space for keeping all the programming challenges I've attempted. This repository has also been of use to gain some experience with the use of Git.
 
+#### Text Integers
+
+Create a function which outputs integers as text.
+
 ## Completed challenges
 
 #### Heavy Balls - Ruby
