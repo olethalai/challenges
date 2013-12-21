@@ -11,7 +11,8 @@ Gem::Specification.new do |s|
   s.email       = 'oletha@gmail.com'
   s.files       = Dir['bin/*']
   s.homepage    = 'https://github.com/olethalai/challenges/tree/master/apns-cli'
-
+  s.license		= 'MIT'
+  
   s.add_dependency "houston"
   s.add_dependency "colored"
 
