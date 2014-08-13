@@ -145,6 +145,10 @@ In the Countdown Conundrum, a 9-letter anagram is presented to the players. They
 
 If a player thinks they have solved the anagram, they can buzz in to stop the clock and present their answer.
 
+If a player answers correctly, they are awarded **10 points** and the game finishes.
+
 If a player gives an incorrect answer, the countdown continues, and remaining players can buzz in.
 
-Players may only guess once. If there are no players left to guess before the 30 seconds are up, the game finishes.
+Players may only guess once.
+
+If there are no players left to guess before the 30 seconds are up, the game finishes.
