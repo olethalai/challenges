@@ -1,7 +1,13 @@
 Given(/^no guesses are made$/) do
-  pending # express the regexp above with the code you wish you had
+  # No-op
 end
 
 When(/^I press my buzzer after (\d+) seconds$/) do |seconds|
-  pending # express the regexp above with the code you wish you had
+  sleep seconds
+  activate_buzzer
+end
+
+When(/^I guess correctly$/) do
+  answer = get_conundrum_solution
+  guess_conundrum answer
 end
