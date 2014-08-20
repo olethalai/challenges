@@ -52,3 +52,9 @@ Conundrum
 
 =end
 
+require File.join(File.dirname(__FILE__), 'controllers.rb')
+
+def main(*args)
+  # Start up a new game
+  CountdownController.new
+end
