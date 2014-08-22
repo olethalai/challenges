@@ -56,5 +56,10 @@ require File.join(File.dirname(__FILE__), 'controllers.rb')
 
 def main(*args)
   # Start up a new game
-  CountdownController.new
+  @game = CountdownController.new
+  while !@game.end?
+    @game.new_game
+  end
 end
+
+main

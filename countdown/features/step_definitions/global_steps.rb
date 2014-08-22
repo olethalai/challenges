@@ -4,7 +4,7 @@ Given(/^I am about to begin playing a (Letters round|Numbers round|Countdown Con
 end
 
 Then(/^I can see the Countdown Clock$/) do
-  check_element_exists countdown_clock
+  check_element_visible countdown_clock
 end
 
 Then(/^the Countdown Clock shows (\d+) seconds remaining$/) do |seconds|
@@ -13,10 +13,11 @@ Then(/^the Countdown Clock shows (\d+) seconds remaining$/) do |seconds|
 end
 
 Given(/^I am playing a (Letters round|Numbers round|Countdown Conundrum)$/) do |round|
-  set_round round
+  round_id = convert_to_round_id(round)
+  set_round round_id
   autocomplete_round_setup
   start_round
-  assert_equal round, get_round
+  assert_equal round_id, get_round
   assert_equal 1, get_round_stage
 end
 
