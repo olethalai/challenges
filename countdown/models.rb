@@ -24,6 +24,8 @@ end
 
 class CountdownRound
 
+  attr_accessor :stage, :ROUND_ID
+
   def initialize(controller)
     # TODO: Write initializer
     @controller = controller
@@ -38,6 +40,20 @@ class LettersRound < CountdownRound
   def initialize(controller)
     super
     # TODO: Write initializer
+    @ROUND_ID = 0
+    @letters = Array.new(9)
+    @stage = 0
+  end
+
+  def autocomplete_setup
+    @letters.length.times do |i|
+      @letters[i] = generate_letter
+    end
+    @stage = 1
+  end
+
+  def generate_letter
+    return "A"
   end
 
 end
@@ -47,6 +63,7 @@ class NumbersRound < CountdownRound
 
   def initialize(controller)
     super
+    @ROUND_ID = 1
     # TODO: Write initializer
   end
 
@@ -57,6 +74,7 @@ class CountdownConundrum < CountdownRound
 
   def initialize(controller)
     super
+    @ROUND_ID = 2
     # TODO: Write initializer
   end
 

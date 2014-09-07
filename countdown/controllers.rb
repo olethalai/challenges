@@ -60,7 +60,11 @@ class RoundController
   end
 
   def get_round
-    return @round
+    return @model.ROUND_ID
+  end
+
+  def get_stage
+    return @model.stage
   end
 
   # Callbacks
@@ -71,6 +75,10 @@ class RoundController
 
   def show_countdown_clock
     @controller.show_countdown_clock
+  end
+
+  def autocomplete_setup
+    @model.autocomplete_setup
   end
 
 end

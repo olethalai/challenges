@@ -13,11 +13,11 @@ Then(/^the Countdown Clock shows (\d+) seconds remaining$/) do |seconds|
 end
 
 Given(/^I am playing a (Letters round|Numbers round|Countdown Conundrum)$/) do |round|
-  round_id = round
-  set_round round_id
+  set_round round
   autocomplete_round_setup
   start_round
-  assert_equal round_id, get_round
+  assert_equal round, get_round
+  # Setup (stage 0) should be complete, and the round should now be in play (stage 1)
   assert_equal 1, get_round_stage
 end
 

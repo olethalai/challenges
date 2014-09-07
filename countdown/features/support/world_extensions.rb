@@ -11,7 +11,7 @@ module RoundManager
   end
 
   def autocomplete_round_setup(autocomplete=true)
-    @autocomplete_round_setup = autocomplete
+    @round_controller.autocomplete_setup
   end
 
   def start_round
@@ -20,7 +20,7 @@ module RoundManager
   end
 
   def get_round_stage
-    # TODO: Tap into the RoundController to see what stage the round is at
+    @round_controller.get_stage
   end
 
 end
