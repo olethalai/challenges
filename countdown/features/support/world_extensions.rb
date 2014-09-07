@@ -15,8 +15,7 @@ module RoundManager
   end
 
   def start_round
-    # TODO: Implement round management
-    # Will this manager handle the autocomplete for setup?
+    @round_controller.start
   end
 
   def get_round_stage

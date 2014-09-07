@@ -51,6 +51,10 @@ Conundrum
 - No points given if no one guesses correctly
 - Round ends after an incorrect guess - timer must be interruptable
 
+REFACTOR:
+
+- Ticker on CountdownClock may not be accurate 100% of the time
+
 =end
 
 require File.join(File.dirname(__FILE__), 'controllers.rb')

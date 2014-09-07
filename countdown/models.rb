@@ -19,6 +19,21 @@ class CountdownClock
     @value = 0
   end
 
+  def start
+    # Tick in one-second increments
+    ticker = Thread.new {
+      while @value < 30
+        tick
+      end
+    }
+  end
+
+  def tick
+    sleep 0.5
+    @value += 1
+    sleep 0.5
+  end
+
 end
 
 
@@ -30,6 +45,15 @@ class CountdownRound
     # TODO: Write initializer
     @controller = controller
     @controller.show_countdown_clock
+    @stage = 0
+  end
+
+  def start
+    if @stage == 1
+      @controller.start_countdown_clock
+    else
+      fail "Cannot start round; incorrect stage: #{@stage}"
+    end
   end
 
 end
@@ -42,7 +66,6 @@ class LettersRound < CountdownRound
     # TODO: Write initializer
     @ROUND_ID = 0
     @letters = Array.new(9)
-    @stage = 0
   end
 
   def autocomplete_setup

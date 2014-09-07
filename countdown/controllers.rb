@@ -37,6 +37,10 @@ class CountdownController
     @clock_controller.show_countdown_clock
   end
 
+  def start_countdown_clock
+    @clock_controller.start
+  end
+
 end
 
 
@@ -77,8 +81,16 @@ class RoundController
     @controller.show_countdown_clock
   end
 
+  def start_countdown_clock
+    @controller.start_countdown_clock
+  end
+
   def autocomplete_setup
     @model.autocomplete_setup
+  end
+
+  def start
+    @model.start
   end
 
 end
@@ -130,6 +142,10 @@ class CountdownClockController
 
   def value
     return @model.value
+  end
+
+  def start
+    @model.start
   end
 
 end
