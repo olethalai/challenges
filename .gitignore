@@ -1,3 +1,4 @@
 apns-cli/lib/
 apns-cli/archive/
 apns-cli/lib/devices.yaml
+.DS_Store

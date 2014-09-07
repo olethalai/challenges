@@ -5,6 +5,6 @@ require 'colored'
 
 require File.join(File.dirname(__FILE__), '..', '..', 'controllers.rb')
 
-$DEBUG_MODE = true
+$DEBUG_MODE = false
 
 $HOME_URL = "placeholder.com"

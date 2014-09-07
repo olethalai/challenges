@@ -49,33 +49,18 @@ class RoundController
 
   def set_round(id)
     @round = id
+    case @round
+    when 0
+      @model = LettersRound.new(self)
+    when 1
+      @model = NumbersRound.new(self)
+    when 2
+      @model = CountdownConundrum.new(self)
+    end
   end
 
   def get_round
     return @round
-  end
-
-  def play_round
-    # Initialize the appropriate model
-    @round_model = nil
-    case @round
-    when 0
-      @round_model = LettersRound.new
-    when 1
-      @round_model = NumbersRound.new
-    when 2
-      @round_model = CountdownConundrum.new
-    end
-
-    # Setup
-    @stage = 0
-    @round_model.perform_setup
-    # Play
-    @stage = 1
-    @round_model.play
-    # Scoring
-    @stage = 2
-    @round_model.perform_scoring
   end
 
   # Callbacks
@@ -133,6 +118,10 @@ class CountdownClockController
 
   def visible?
     return @view.visible?
+  end
+
+  def value
+    return @model.value
   end
 
 end

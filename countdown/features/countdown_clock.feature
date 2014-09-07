@@ -12,20 +12,20 @@ Feature: Countdown Clock
       @letters
       Examples:
 
-      | round         |
-      | Letters round |
+      | round               |
+      | Letters round       |
 
       @numbers
       Examples:
 
-      | round         |
-      | Numbers round |
+      | round               |
+      | Numbers round       |
 
       @countdown_conundrum
       Examples:
 
-      | round                 |
-      | Countdown Conundrum   |
+      | round               |
+      | Countdown Conundrum |
 
   Scenario Outline: Clock is visible and accurate during rounds
 
@@ -36,29 +36,29 @@ Feature: Countdown Clock
       @letters
       Examples:
 
-      | round         | x     | y     |
-      | Letters round | 1     | 29    |
-      | Letters round | 5     | 25    |
-      | Letters round | 10    | 20    |
-      | Letters round | 24    | 6     |
+      | round               | x  | y  |
+      | Letters round       | 1  | 29 |
+      | Letters round       | 5  | 25 |
+      | Letters round       | 10 | 20 |
+      | Letters round       | 24 | 6  |
 
       @numbers
       Examples:
 
-      | round         | x     | y     |
-      | Numbers round | 1     | 29    |
-      | Numbers round | 5     | 25    |
-      | Numbers round | 15    | 15    |
-      | Numbers round | 27    | 3     |
+      | round               | x  | y  |
+      | Numbers round       | 1  | 29 |
+      | Numbers round       | 5  | 25 |
+      | Numbers round       | 15 | 15 |
+      | Numbers round       | 27 | 3  |
 
       @countdown_conundrum
       Examples:
 
-      | round                 | x     | y     |
-      | Countdown Conundrum   | 1     | 29    |
-      | Countdown Conundrum   | 5     | 25    |
-      | Countdown Conundrum   | 18    | 12    |
-      | Countdown Conundrum   | 29    | 1     |
+      | round               | x  | y  |
+      | Countdown Conundrum | 1  | 29 |
+      | Countdown Conundrum | 5  | 25 |
+      | Countdown Conundrum | 18 | 12 |
+      | Countdown Conundrum | 29 | 1  |
 
   @countdown_conundrum
   Scenario: Clock is visible and accurate when paused during a Countdown Conundrum

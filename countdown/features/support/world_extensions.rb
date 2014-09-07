@@ -10,19 +10,6 @@ module RoundManager
     return @round_controller.get_round
   end
 
-  def convert_to_round_id(round_string)
-    case round_string.downcase
-    when "letters round"
-      return 0
-    when "numbers round"
-      return 1
-    when "countdown conundrum"
-      return 2
-    else
-      fail "Attempted to convert invalid round string: #{round_string}"
-    end
-  end
-
   def autocomplete_round_setup(autocomplete=true)
     @autocomplete_round_setup = autocomplete
   end

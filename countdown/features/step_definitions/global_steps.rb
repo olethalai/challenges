@@ -13,7 +13,7 @@ Then(/^the Countdown Clock shows (\d+) seconds remaining$/) do |seconds|
 end
 
 Given(/^I am playing a (Letters round|Numbers round|Countdown Conundrum)$/) do |round|
-  round_id = convert_to_round_id(round)
+  round_id = round
   set_round round_id
   autocomplete_round_setup
   start_round

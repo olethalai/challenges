@@ -1,7 +1,7 @@
 # Countdown
 
 =begin
-	
+
 TODO:
 
 Essentials
@@ -16,6 +16,7 @@ Additions
 - Multiplayer scoring
 - Meta-scoring - rounds won between players
 - Winner stays on (8 round max)
+- Cucumber profile setups for debug/clean runs
 
 Letters
 =======

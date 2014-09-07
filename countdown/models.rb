@@ -12,9 +12,11 @@ end
 
 class CountdownClock
 
+  attr_accessor :value
+
   def initialize(controller)
-    # TODO: Write initializer
     @controller = controller
+    @value = 0
   end
 
 end
