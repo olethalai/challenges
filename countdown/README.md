@@ -2,6 +2,11 @@
 
 Countdown is a game consisting of 15 rounds. The highest scoring player(s) score points at the end of each round, and the player with the most points at the end of the game wins.
 
+## Setup
+
+  $ bundle install
+  $ bundle exec cucumber
+
 ## Rounds
 
 Rounds are played for a maximum duration of 30 seconds each. A clock is displayed to players during rounds, showing elapsed/remaining time.

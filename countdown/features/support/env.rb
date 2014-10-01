@@ -1,6 +1,7 @@
+require 'rubygems'
 require 'cucumber'
-require 'minitest'
 require 'colored'
+require 'minitest/autorun'
 # require 'watir-webdriver'
 
 require File.join(File.dirname(__FILE__), '..', '..', 'controllers.rb')
