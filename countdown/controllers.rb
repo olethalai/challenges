@@ -27,6 +27,10 @@ class CountdownController
     return @clock_controller
   end
 
+  def get_player_controller
+    return @player_controller
+  end
+
   # Callbacks
 
   def update_player_score(player_id, score)
@@ -39,6 +43,10 @@ class CountdownController
 
   def start_countdown_clock
     @clock_controller.start
+  end
+
+  def is_clock_active?
+    @clock_controller.is_active?
   end
 
 end
@@ -93,6 +101,64 @@ class RoundController
     @model.start
   end
 
+  # Delegation...?
+
+  def get_letters_board
+    # Must be a letters round
+    if @model.class == LettersRound
+      return @model.get_letters
+    else
+      fail "Not playing a Letters round"
+    end
+  end
+
+  def choose_consonant
+    # Must be a letters round
+    if @model.class == LettersRound
+      @model.choose_consonant
+    else
+      fail "Not playing a Letters round"
+    end
+  end
+
+  def choose_vowel
+    # Must be a letters round
+    if @model.class == LettersRound
+      @model.choose_vowel
+    else
+      fail "Not playing a Letters round"
+    end
+  end
+
+  def guess_word(word)
+    # Must be a letters round
+    if @model.class == LettersRound
+      @model.guess(word)
+    else
+      fail "Not playing a Letters round"
+    end
+  end
+
+  def guess_conundrum(guess)
+    # Must be a conundrum round
+    if @model.class == CountdownConundrum
+    # Player must have buzzed in
+    # TODO: Check this is a legit move or refactor
+      if @controller.is_clock_active?
+        @model.guess(guess)
+      else
+        fail "No one has buzzed in!"
+      end
+    else
+      fail "Not playing a Conundrum round"
+    end
+  end
+
+  def set_player_score(score)
+    # TODO: Get rid of magic number for player parameter
+    @controller.get_player_controller.set_player_score(1, score)
+  end
+
 end
 
 
@@ -106,9 +172,15 @@ class PlayerController
     end
   end
 
+  # Sets the player's score outright
+  def set_player_score(player_id, score)
+    # TODO: This isn't really an ID system for the players - rename or refactor
+    @players[player_id - 1].set_score(score)
+  end
+
   # Callbacks
 
-  def update_player_score(player_id, score)
+  def increment_player_score(player_id, points)
     # TODO: Implement score updating
   end
 
@@ -125,7 +197,7 @@ class CountdownClockController
   end
 
   def get_countdown_clock
-    # TODO: Write countdown clock getter
+    @model
   end
 
   def show_countdown_clock
@@ -146,6 +218,14 @@ class CountdownClockController
 
   def start
     @model.start
+  end
+
+  def pause
+    @model.pause
+  end
+
+  def is_active?
+    @model.is_active?
   end
 
 end

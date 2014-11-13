@@ -64,10 +64,10 @@ Feature: Countdown Clock
   Scenario: Clock is visible and accurate when paused during a Countdown Conundrum
 
     Given I am playing a Countdown Conundrum
-    When I press my buzzer after 23 seconds
-    Then the Countdown Clock shows 7 seconds remaining
+    When I press my buzzer after 8 seconds
+    Then the Countdown Clock shows 22 seconds remaining
     And I wait for 2 seconds
-    Then the Countdown Clock shows 7 seconds remaining
+    Then the Countdown Clock shows 22 seconds remaining
 
   @letters
   Scenario: Clock is visible and accurate at the end of a Letters round

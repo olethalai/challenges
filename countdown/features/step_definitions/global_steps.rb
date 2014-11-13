@@ -33,3 +33,15 @@ Then(/^the round ends$/) do
   stage = get_round_stage
   assert_equal 2, stage
 end
+
+Then(/^I am awarded (\d+) points$/) do |points|
+  assert_equal get_initial_player_score + points, get_player_score
+end
+
+Then(/^my total score is (\d+)$/) do |score|
+  assert_equal score, get_player_score
+end
+
+Given(/^I have (\d+) points$/) do |points|
+  set_initial_player_score(points)
+end
